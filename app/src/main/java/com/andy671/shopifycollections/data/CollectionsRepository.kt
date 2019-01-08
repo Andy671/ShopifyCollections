@@ -3,6 +3,7 @@ package com.andy671.shopifycollections.data
 import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.util.Log
 import kotlinx.serialization.json.JSON
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -35,15 +36,16 @@ interface CollectionsRestApiService {
 }
 
 class CollectionsRepository(val application: Application) {
-    private var collectionList = arrayListOf<CustomCollection>()
-
-    private var collectionListLiveData = MutableLiveData<List<CustomCollection>>()
 
     companion object {
         private const val BASE_URL = "https://shopicruit.myshopify.com/"
         private const val ACCESS_TOKEN = "c32313df0d0ef512ca64d5b336a0d7c6"
         private const val DEFAULT_PAGE = 1
     }
+
+    private var collectionList = arrayListOf<CustomCollection>()
+    private var collectionListLiveData = MutableLiveData<List<CustomCollection>>()
+    private lateinit var service: CollectionsRestApiService
 
     init {
         collectionListLiveData.value = collectionList
@@ -52,12 +54,10 @@ class CollectionsRepository(val application: Application) {
                 .baseUrl(BASE_URL)
                 .build()
 
-        val service = retrofit.create(CollectionsRestApiService::class.java)
-        retrieveCustomCollections(service)
-
+        service = retrofit.create(CollectionsRestApiService::class.java)
     }
 
-    private fun retrieveCustomCollections(service: CollectionsRestApiService) {
+    fun retrieveCustomCollections() {
         service.getCustomCollections(DEFAULT_PAGE, ACCESS_TOKEN).enqueue(object : Callback<ResponseBody> {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
@@ -70,15 +70,20 @@ class CollectionsRepository(val application: Application) {
                     collectionList.add(CustomCollection(collection.id, collection.title, collection.body_html, collection.image.src))
                 }
                 collectionListLiveData.value = collectionList
-
-                for (collection in collectionList) {
-                    retrieveCollects(service, collection)
-                }
             }
         })
     }
 
-    private fun retrieveCollects(service: CollectionsRestApiService, collection: CustomCollection) {
+    fun retrieveCollectionProducts(position: Int) {
+        if (collectionList[position].products.isEmpty())
+            retrieveCollects(collectionList[position])
+    }
+
+    fun getCollections(): LiveData<List<CustomCollection>> {
+        return collectionListLiveData
+    }
+
+    private fun retrieveCollects(collection: CustomCollection) {
         service.getCollects(collection.id, DEFAULT_PAGE, ACCESS_TOKEN).enqueue(object : Callback<ResponseBody> {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
@@ -116,10 +121,5 @@ class CollectionsRepository(val application: Application) {
             }
 
         })
-    }
-
-
-    fun getCollections(): LiveData<List<CustomCollection>> {
-        return collectionListLiveData
     }
 }

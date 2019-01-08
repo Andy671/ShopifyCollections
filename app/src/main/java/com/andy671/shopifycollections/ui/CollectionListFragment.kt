@@ -9,17 +9,17 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import com.andy671.shopifycollections.R
 import com.andy671.shopifycollections.data.CustomCollection
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
-import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_collection.view.*
 
 
 class CollectionListFragment : Fragment() {
 
     private lateinit var mViewModel: CollectionsViewModel
+    private lateinit var mRecyclerView: RecyclerView
     private lateinit var mListAdapter: CollectionListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -33,13 +33,20 @@ class CollectionListFragment : Fragment() {
 
         mListAdapter = CollectionListAdapter()
 
-        val recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_collection_list)
-        recyclerView.adapter = mListAdapter
-        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        mRecyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_collection_list)
+        mRecyclerView.adapter = mListAdapter
+        mRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         mViewModel.getCollections().observe(this, Observer {
             mListAdapter.currentList = it as ArrayList<CustomCollection>
             mListAdapter.notifyDataSetChanged()
+            if (mListAdapter.currentList.size > 0) {
+                fragmentView.findViewById<ProgressBar>(R.id.progress_bar_list).visibility = View.GONE
+                mRecyclerView.visibility = View.VISIBLE
+            } else {
+                fragmentView.findViewById<ProgressBar>(R.id.progress_bar_list).visibility = View.VISIBLE
+                mRecyclerView.visibility = View.GONE
+            }
         })
 
         return fragmentView
@@ -52,11 +59,10 @@ class CollectionListFragment : Fragment() {
                 mViewModel.onClickCollectionCard(position)
             }
             holderView.text_collection_title.text = collection.title
-            // TODO: placeholder drawable
+
             Glide.with(holderView.context)
                     .load(collection.imageUrl)
-                    .transition(withCrossFade())
-                    .apply(RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
+                    .placeholder(R.drawable.ic_placeholder)
                     .into(holderView.image_collection)
         }
     }

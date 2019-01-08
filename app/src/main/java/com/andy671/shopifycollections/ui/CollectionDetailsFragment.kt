@@ -10,12 +10,11 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import com.andy671.shopifycollections.R
 import com.andy671.shopifycollections.data.CustomCollection
 import com.andy671.shopifycollections.data.Product
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_product.view.*
 
 class CollectionDetailsFragment : Fragment() {
@@ -44,6 +43,13 @@ class CollectionDetailsFragment : Fragment() {
                 mRecyclerView.scrollToPosition(0)
                 mListAdapter.currentList = it.products
                 mListAdapter.notifyDataSetChanged()
+                if (mListAdapter.currentList.size > 0) {
+                    fragmentView.findViewById<ProgressBar>(R.id.progress_bar_details).visibility = View.GONE
+                    mRecyclerView.visibility = View.VISIBLE
+                } else {
+                    fragmentView.findViewById<ProgressBar>(R.id.progress_bar_details).visibility = View.VISIBLE
+                    mRecyclerView.visibility = View.GONE
+                }
             }
         })
 
@@ -58,11 +64,9 @@ class CollectionDetailsFragment : Fragment() {
             val html = resources.getString(R.string.total_available_inventory, product.totalAvailableInventory)
             holderView.text_product_total_inventory.text = Html.fromHtml(html)
 
-            // TODO: placeholder drawable
             Glide.with(holderView.context)
                     .load(product.imageUrl)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .apply(RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
+                    .placeholder(R.drawable.ic_placeholder)
                     .into(holderView.image_product)
         }
     }

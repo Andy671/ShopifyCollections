@@ -2,9 +2,13 @@ package com.andy671.shopifycollections.ui
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.support.v7.app.AppCompatActivity
+import android.content.Context
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.andy671.shopifycollections.R
+import kotlinx.android.synthetic.main.activity_collections.*
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 class CollectionsActivity : AppCompatActivity() {
 
@@ -39,19 +43,22 @@ class CollectionsActivity : AppCompatActivity() {
 
             if (it == CollectionsViewModel.Page.CollectionList) {
                 manager.beginTransaction()
-                        .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out)
                         .show(collectionListFragment)
                         .hide(collectionDetailsFragment)
                         .commit()
+                text_toolbar_title.visibility = View.VISIBLE
             } else if (it == CollectionsViewModel.Page.CollectionDetails) {
                 manager.beginTransaction()
-                        .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out)
                         .show(collectionDetailsFragment)
                         .hide(collectionListFragment)
                         .commit()
+                text_toolbar_title.visibility = View.GONE
             }
-
         })
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
 
     override fun onBackPressed() {

@@ -37,6 +37,7 @@ class CollectionsViewModel(val application: Application) : ViewModel() {
 
     init {
         currentPage.value = CollectionsViewModel.Page.CollectionList
+        collectionsRepository.retrieveCustomCollections()
     }
 
     fun getCollections(): LiveData<List<CustomCollection>> {
@@ -53,6 +54,7 @@ class CollectionsViewModel(val application: Application) : ViewModel() {
 
     fun onClickCollectionCard(position: Int) {
         currentCollectionIndex.value = position
+        collectionsRepository.retrieveCollectionProducts(position)
         currentPage.value = Page.CollectionDetails
     }
 

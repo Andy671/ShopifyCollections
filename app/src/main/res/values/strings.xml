@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Shopify Collections</string>
     <string name="total_available_inventory">Available Inventory: &lt;b>%1$d&lt;/b></string>
+    <string name="title_collection_list">Custom Collections</string>
 </resources>
