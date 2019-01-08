@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".CollectionsActivity">
+    tools:context=".ui.CollectionsActivity">
 
-    <include layout="@layout/item_collection_details" />
-
-    <Space
+    <fragment
+        android:id="@+id/fragment_collection_list"
+        android:name="com.andy671.shopifycollections.ui.CollectionListFragment"
         android:layout_width="match_parent"
-        android:layout_height="4dp" />
+        android:layout_height="match_parent" />
 
-    <include layout="@layout/item_collection" />
-
-    <Space
+    <fragment
+        android:id="@+id/fragment_collection_details"
+        android:name="com.andy671.shopifycollections.ui.CollectionDetailsFragment"
         android:layout_width="match_parent"
-        android:layout_height="4dp" />
-
-    <include layout="@layout/item_product" />
-</LinearLayout>
+        android:layout_height="match_parent" />
+</FrameLayout>

@@ -1,0 +1,84 @@
+package com.andy671.shopifycollections.ui
+
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
+import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.support.v7.recyclerview.extensions.ListAdapter
+import android.support.v7.util.DiffUtil
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.andy671.shopifycollections.R
+import com.andy671.shopifycollections.data.CustomCollection
+import kotlinx.android.synthetic.main.item_collection.view.*
+import java.lang.Exception
+
+
+class CollectionListFragment : Fragment() {
+
+    private lateinit var mViewModel: CollectionsViewModel
+    private lateinit var mListAdapter: ListAdapter<CustomCollection, CollectionListViewHolder>
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val fragmentView = inflater.inflate(R.layout.fragment_collection_list, container, false)
+
+        activity?.run {
+            mViewModel = ViewModelProviders.of(this).get(CollectionsViewModel::class.java)
+        } ?: throw Exception("Wrong Activity")
+
+        mListAdapter = CollectionListAdapter()
+
+        val recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_collection_list)
+        recyclerView.adapter = mListAdapter
+        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+        mViewModel.getCollections().observe(this, Observer {
+            mListAdapter.submitList(ArrayList(it!!))
+        })
+
+        return fragmentView
+    }
+
+    class CollectionListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private var holderView: View = view
+
+        fun bind(collection: CustomCollection) {
+            holderView.text_collection_title.text = collection.title
+        }
+    }
+
+    class CollectionListDiffCallback: DiffUtil.ItemCallback<CustomCollection>() {
+
+        override fun areItemsTheSame(collection: CustomCollection, anotherCollection: CustomCollection): Boolean {
+            return collection == anotherCollection
+        }
+
+        override fun areContentsTheSame(collection: CustomCollection, anotherCollection: CustomCollection): Boolean {
+            return collection.title == anotherCollection.title
+                    && collection.image == anotherCollection.image
+        }
+    }
+
+    inner class CollectionListAdapter
+        : ListAdapter<CustomCollection, CollectionListViewHolder>(CollectionListDiffCallback()) {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CollectionListViewHolder {
+            val itemView = LayoutInflater.from(context)
+                    .inflate(R.layout.item_collection, parent, false)
+            return CollectionListViewHolder(itemView)
+        }
+
+        override fun onBindViewHolder(holder: CollectionListViewHolder, position: Int) {
+            holder.bind(getItem(position))
+        }
+
+    }
+
+
+}
+
+
