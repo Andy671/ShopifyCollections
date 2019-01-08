@@ -31,7 +31,8 @@ class CollectionsActivity : AppCompatActivity() {
                     .commit()
         }
 
-        mViewModel = ViewModelProviders.of(this).get(CollectionsViewModel::class.java)
+        mViewModel = ViewModelProviders.of(this, CollectionsViewModelFactory(application))
+                .get(CollectionsViewModel::class.java)
         mViewModel.getPage().observe(this, Observer {
             val collectionListFragment = manager.findFragmentByTag(COLLECTION_LIST_FRAGMENT_TAG)!!
             val collectionDetailsFragment = manager.findFragmentByTag(COLLECTION_DETAILS_FRAGMENT_TAG)!!

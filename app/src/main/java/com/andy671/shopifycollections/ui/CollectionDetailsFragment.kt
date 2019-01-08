@@ -25,7 +25,8 @@ class CollectionDetailsFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_collection_details, container, false)
 
         activity?.run {
-            mViewModel = ViewModelProviders.of(this).get(CollectionsViewModel::class.java)
+            mViewModel = ViewModelProviders.of(this, CollectionsViewModelFactory(application))
+                    .get(CollectionsViewModel::class.java)
         } ?: throw Exception("Wrong Activity")
 
         mListAdapter = CollectionDetailsAdapter()
@@ -34,20 +35,19 @@ class CollectionDetailsFragment : Fragment() {
         mRecyclerView.adapter = mListAdapter
         mRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-        mViewModel.getCurrentProducts().observe(this, Observer {
+        mViewModel.getCurrentCollection().observe(this, Observer {
             mRecyclerView.scrollToPosition(0)
-            mListAdapter.currentList = it as ArrayList<Product>
+            mListAdapter.currentList = it?.products as ArrayList<Product>
             mListAdapter.notifyDataSetChanged()
         })
 
         return fragmentView
     }
 
-    inner class CollectionDetailsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private var holderView: View = view
+    inner class CollectionDetailsViewHolder(private val holderView: View) : RecyclerView.ViewHolder(holderView) {
 
         fun bind(product: Product) {
-            holderView.text_product_name.text = product.name
+            holderView.text_product_title.text = product.title
             holderView.text_product_total_inventory.text = product.totalAvailableInventory.toString()
             Glide.with(holderView.context)
                     .load(product.imageUrl)

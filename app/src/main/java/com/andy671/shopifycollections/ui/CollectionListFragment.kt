@@ -28,7 +28,8 @@ class CollectionListFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_collection_list, container, false)
 
         activity?.run {
-            mViewModel = ViewModelProviders.of(this).get(CollectionsViewModel::class.java)
+            mViewModel = ViewModelProviders.of(this, CollectionsViewModelFactory(application))
+                    .get(CollectionsViewModel::class.java)
         } ?: throw Exception("Wrong Activity")
 
         mListAdapter = CollectionListAdapter()
@@ -45,8 +46,7 @@ class CollectionListFragment : Fragment() {
         return fragmentView
     }
 
-    inner class CollectionListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private var holderView: View = view
+    inner class CollectionListViewHolder(private val holderView: View) : RecyclerView.ViewHolder(holderView) {
 
         fun bind(collection: CustomCollection) {
             holderView.card_collection.setOnClickListener {
