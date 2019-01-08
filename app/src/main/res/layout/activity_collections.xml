@@ -7,15 +7,8 @@
     android:orientation="vertical"
     tools:context=".ui.CollectionsActivity">
 
-    <fragment
-        android:id="@+id/fragment_collection_list"
-        android:name="com.andy671.shopifycollections.ui.CollectionListFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <fragment
-        android:id="@+id/fragment_collection_details"
-        android:name="com.andy671.shopifycollections.ui.CollectionDetailsFragment"
+    <FrameLayout
+        android:id="@+id/frame_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </FrameLayout>

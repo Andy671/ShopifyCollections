@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!--TODO: image here-->
+        <!--TODO: imageUrl here-->
         <ImageView
             android:id="@+id/image_collection_info"
             android:layout_width="128dp"

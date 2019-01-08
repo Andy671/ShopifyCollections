@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.andy671.shopifycollections.R
 import com.andy671.shopifycollections.data.CustomCollection
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_collection.view.*
 import java.lang.Exception
 
@@ -43,15 +44,8 @@ class CollectionListFragment : Fragment() {
         return fragmentView
     }
 
-    class CollectionListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private var holderView: View = view
 
-        fun bind(collection: CustomCollection) {
-            holderView.text_collection_title.text = collection.title
-        }
-    }
-
-    class CollectionListDiffCallback: DiffUtil.ItemCallback<CustomCollection>() {
+    class CollectionListDiffCallback : DiffUtil.ItemCallback<CustomCollection>() {
 
         override fun areItemsTheSame(collection: CustomCollection, anotherCollection: CustomCollection): Boolean {
             return collection == anotherCollection
@@ -59,7 +53,21 @@ class CollectionListFragment : Fragment() {
 
         override fun areContentsTheSame(collection: CustomCollection, anotherCollection: CustomCollection): Boolean {
             return collection.title == anotherCollection.title
-                    && collection.image == anotherCollection.image
+                    && collection.imageUrl == anotherCollection.imageUrl
+        }
+    }
+
+    inner class CollectionListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private var holderView: View = view
+
+        fun bind(collection: CustomCollection) {
+            holderView.card_collection.setOnClickListener {
+                mViewModel.onClickCollectionCard(collection)
+            }
+            holderView.text_collection_title.text = collection.title
+            Glide.with(holderView.context)
+                    .load(collection.imageUrl)
+                    .into(holderView.image_collection)
         }
     }
 

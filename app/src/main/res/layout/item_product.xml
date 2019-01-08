@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <!--TODO: image here-->
+        <!--TODO: imageUrl here-->
         <ImageView
             android:id="@+id/image_product"
             android:layout_width="48dp"
