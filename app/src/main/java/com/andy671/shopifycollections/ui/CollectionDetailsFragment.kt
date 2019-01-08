@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import com.andy671.shopifycollections.R
 import com.andy671.shopifycollections.data.Product
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_product.view.*
 
 class CollectionDetailsFragment : Fragment() {
@@ -49,8 +51,11 @@ class CollectionDetailsFragment : Fragment() {
         fun bind(product: Product) {
             holderView.text_product_title.text = product.title
             holderView.text_product_total_inventory.text = product.totalAvailableInventory.toString()
+            // TODO: placeholder drawable
             Glide.with(holderView.context)
                     .load(product.imageUrl)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .apply(RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
                     .into(holderView.image_product)
         }
     }

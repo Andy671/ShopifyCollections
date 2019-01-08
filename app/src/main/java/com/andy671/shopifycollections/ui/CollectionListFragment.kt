@@ -4,8 +4,6 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.recyclerview.extensions.ListAdapter
-import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -14,8 +12,9 @@ import android.view.ViewGroup
 import com.andy671.shopifycollections.R
 import com.andy671.shopifycollections.data.CustomCollection
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_collection.view.*
-import java.lang.Exception
 
 
 class CollectionListFragment : Fragment() {
@@ -53,8 +52,11 @@ class CollectionListFragment : Fragment() {
                 mViewModel.onClickCollectionCard(collection)
             }
             holderView.text_collection_title.text = collection.title
+            // TODO: placeholder drawable
             Glide.with(holderView.context)
                     .load(collection.imageUrl)
+                    .transition(withCrossFade())
+                    .apply(RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
                     .into(holderView.image_collection)
         }
     }

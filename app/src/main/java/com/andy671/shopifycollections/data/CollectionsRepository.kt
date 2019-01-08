@@ -3,9 +3,8 @@ package com.andy671.shopifycollections.data
 import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.util.Log
+import kotlinx.serialization.json.JSON
 import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,9 +21,9 @@ interface CollectionsRestApiService {
             : Call<ResponseBody>
 
     @GET("/admin/collects.json")
-    fun getCollection(@Query("collection_id") collectionId: Long,
-                      @Query("page") page: Int,
-                      @Query("access_token") accessToken: String)
+    fun getCollects(@Query("collection_id") collectionId: Long,
+                    @Query("page") page: Int,
+                    @Query("access_token") accessToken: String)
             : Call<ResponseBody>
 
     @GET("/admin/products.json")
@@ -62,88 +61,63 @@ class CollectionsRepository(val application: Application) {
 
     private fun retrieveCustomCollections(service: CollectionsRestApiService) {
         service.getCustomCollections(DEFAULT_PAGE, ACCESS_TOKEN).enqueue(object : Callback<ResponseBody> {
+
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
             }
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 val responseBody = response.body() ?: return
-                val jsonObject = JSONObject(responseBody.string())
-                val customCollectionsJson = jsonObject.getJSONArray("custom_collections")
-
-                for (i in 0 until customCollectionsJson.length()) {
-                    val collectionObj = customCollectionsJson.getJSONObject(i)
-
-                    val id = collectionObj.getLong("id")
-                    val title = collectionObj.getString("title")
-
-                    // if the body html and/or image is not specified ignore it.
-                    val bodyHtml = collectionObj?.getString("body_html") ?: ""
-                    val imageUrl = collectionObj?.getJSONObject("image")?.getString("src") ?: ""
-
-                    collectionList.add(CustomCollection(id, title, bodyHtml, imageUrl))
+                val list = JSON.nonstrict.parse(JsonCustomCollectionList.serializer(), responseBody.string())
+                for (collection in list.custom_collections) {
+                    collectionList.add(CustomCollection(collection.id, collection.title, collection.body_html, collection.image.src))
                 }
                 collectionListLiveData.value = collectionList
 
                 for (collection in collectionList) {
-                    retrieveCollection(service, collection)
+                    retrieveCollects(service, collection)
                 }
             }
         })
     }
 
-    private fun retrieveCollection(service: CollectionsRestApiService, collection: CustomCollection) {
-        service.getCollection(collection.id, DEFAULT_PAGE, ACCESS_TOKEN).enqueue(object : Callback<ResponseBody> {
+    private fun retrieveCollects(service: CollectionsRestApiService, collection: CustomCollection) {
+        service.getCollects(collection.id, DEFAULT_PAGE, ACCESS_TOKEN).enqueue(object : Callback<ResponseBody> {
+
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
             }
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 val responseBody = response.body() ?: return
-                val jsonObject = JSONObject(responseBody.string())
-                val customCollectsJson = jsonObject.getJSONArray("collects")
-                val productIds = arrayListOf<Long>()
-                for (i in 0 until customCollectsJson.length()) {
-                    val productId = customCollectsJson.getJSONObject(i).getLong("product_id")
-                    productIds.add(productId)
+                val list = JSON.nonstrict.parse(JsonCollects.serializer(), responseBody.string())
+                val productIdsList = arrayListOf<Long>()
+                for (collect in list.collects) {
+                    productIdsList.add(collect.product_id)
                 }
+                val productIds = productIdsList.joinToString(separator = ",")
                 retrieveProducts(service, collection, productIds)
             }
 
         })
     }
 
-    private fun retrieveProducts(service: CollectionsRestApiService, collection: CustomCollection, productIds: List<Long>) {
-        service.getProducts(convertLongIdsToString(productIds),
-                DEFAULT_PAGE, ACCESS_TOKEN).enqueue(object : Callback<ResponseBody> {
+    private fun retrieveProducts(service: CollectionsRestApiService, collection: CustomCollection, productIds: String) {
+        service.getProducts(productIds, DEFAULT_PAGE, ACCESS_TOKEN).enqueue(object : Callback<ResponseBody> {
+
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
             }
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 val responseBody = response.body() ?: return
-                val jsonObject = JSONObject(responseBody.string())
-                val customCollectsJson = jsonObject.getJSONArray("products")
-                for (i in 0 until customCollectsJson.length()) {
-                    val productObj = customCollectsJson.getJSONObject(i)
-                    val productId = productObj.getLong("id")
-                    val productTitle = productObj?.getString("title") ?: ""
-                    val productImage = productObj?.getJSONObject("image")?.getString("src") ?: ""
-                    var totalAvailable = 0
-                    for (j in 0 until productObj.getJSONArray("variants").length()) {
-                        totalAvailable += productObj.getJSONArray("variants").getJSONObject(j).getInt("inventory_quantity")
-                    }
-                    collection.products.add(Product(productId, productTitle, productImage, totalAvailable))
+                val list = JSON.nonstrict.parse(JsonProducts.serializer(), responseBody.string())
+                for (product in list.products) {
+                    val totalAvailableInventory = product.variants.sumBy { it.inventory_quantity }
+                    collection.products.add(
+                            Product(product.id, product.title, product.image.src, totalAvailableInventory))
                 }
                 collectionListLiveData.value = collectionList
             }
 
         })
-    }
-
-    private fun convertLongIdsToString(ids: List<Long>): String {
-        var string = ""
-        ids.forEach { string += it.toString() + "," }
-        string = string.substring(0 until string.length - 1)
-        Log.d("shopify", string)
-        return string
     }
 
 

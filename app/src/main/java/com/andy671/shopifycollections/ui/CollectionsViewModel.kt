@@ -1,10 +1,7 @@
 package com.andy671.shopifycollections.ui
 
 import android.app.Application
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.*
 import com.andy671.shopifycollections.data.CollectionsRepository
 import com.andy671.shopifycollections.data.CustomCollection
 
