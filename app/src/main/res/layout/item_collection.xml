@@ -4,6 +4,8 @@
     android:id="@+id/card_collection"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
     app:cardElevation="2dp">
 
@@ -12,7 +14,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <!--TODO: imageUrl here-->
         <ImageView
             android:id="@+id/image_collection"
             android:layout_width="48dp"

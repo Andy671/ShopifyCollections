@@ -21,7 +21,7 @@ import java.lang.Exception
 class CollectionListFragment : Fragment() {
 
     private lateinit var mViewModel: CollectionsViewModel
-    private lateinit var mListAdapter: ListAdapter<CustomCollection, CollectionListViewHolder>
+    private lateinit var mListAdapter: CollectionListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -38,23 +38,11 @@ class CollectionListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         mViewModel.getCollections().observe(this, Observer {
-            mListAdapter.submitList(ArrayList(it!!))
+            mListAdapter.currentList = it as ArrayList<CustomCollection>
+            mListAdapter.notifyDataSetChanged()
         })
 
         return fragmentView
-    }
-
-
-    class CollectionListDiffCallback : DiffUtil.ItemCallback<CustomCollection>() {
-
-        override fun areItemsTheSame(collection: CustomCollection, anotherCollection: CustomCollection): Boolean {
-            return collection == anotherCollection
-        }
-
-        override fun areContentsTheSame(collection: CustomCollection, anotherCollection: CustomCollection): Boolean {
-            return collection.title == anotherCollection.title
-                    && collection.imageUrl == anotherCollection.imageUrl
-        }
     }
 
     inner class CollectionListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -71,8 +59,9 @@ class CollectionListFragment : Fragment() {
         }
     }
 
-    inner class CollectionListAdapter
-        : ListAdapter<CustomCollection, CollectionListViewHolder>(CollectionListDiffCallback()) {
+    inner class CollectionListAdapter : RecyclerView.Adapter<CollectionListViewHolder>() {
+
+        var currentList: ArrayList<CustomCollection> = arrayListOf()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CollectionListViewHolder {
             val itemView = LayoutInflater.from(context)
@@ -81,9 +70,12 @@ class CollectionListFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: CollectionListViewHolder, position: Int) {
-            holder.bind(getItem(position))
+            holder.bind(currentList[position])
         }
 
+        override fun getItemCount(): Int {
+            return currentList.size
+        }
     }
 
 

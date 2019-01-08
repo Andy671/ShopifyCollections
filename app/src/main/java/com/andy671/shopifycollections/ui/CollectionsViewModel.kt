@@ -28,12 +28,19 @@ class CollectionsViewModel : ViewModel() {
         collectionListLiveData.value = collectionList
         productListLiveData.value = productList
 
-        collectionList.add(CustomCollection("Test 1", testUrl, "Body", arrayListOf()))
-        collectionList.add(CustomCollection("Test 2", testUrl, "Body", arrayListOf()))
-        collectionList.add(CustomCollection("Test 3", testUrl, "Body", arrayListOf()))
-        collectionList.add(CustomCollection("Test 4", testUrl, "Body", arrayListOf()))
-        collectionList.add(CustomCollection("Test 5", testUrl, "Body", arrayListOf()))
+        collectionList.add(CustomCollection("Collection 1", testUrl, "Body", getDumbProducts()))
+        collectionList.add(CustomCollection("Collection 2", testUrl, "Body", getDumbProducts()))
+        collectionList.add(CustomCollection("Collection 3", testUrl, "Body", getDumbProducts()))
+        collectionList.add(CustomCollection("Collection 4", testUrl, "Body", getDumbProducts()))
+        collectionList.add(CustomCollection("Collection 5", testUrl, "Body", getDumbProducts()))
+    }
 
+    private fun getDumbProducts() : ArrayList<Product>{
+        val list = arrayListOf<Product>()
+        for (i in 0..Random.nextInt(40)) {
+            list.add(Product("Product ${Random.nextInt(100)}", testUrl, Random.nextInt(200)))
+        }
+        return list
     }
 
     fun getPage(): LiveData<Page>{
@@ -49,26 +56,13 @@ class CollectionsViewModel : ViewModel() {
     }
 
     fun onClickCollectionCard(collection: CustomCollection) {
-        /*productList = collection.products
-        productListLiveData.value = productList*/
+        productList = collection.products
+        productListLiveData.value = productList
         pageLiveData.value = Page.CollectionDetails
-        Log.d("ShopifyLog", collection.title)
     }
 
     fun onBackPressed(){
         pageLiveData.value = Page.CollectionList
-    }
-
-    fun addDumbData() {
-        collectionList.add(CustomCollection("Test ${Random.nextInt(100)}", testUrl, "Body", arrayListOf()))
-        collectionListLiveData.value = collectionList
-    }
-
-    fun removeDumbData() {
-        if (collectionList.size > 0) {
-            collectionList.removeAt(collectionList.size - 1)
-            collectionListLiveData.value = collectionList
-        }
     }
 
 }
