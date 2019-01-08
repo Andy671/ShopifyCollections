@@ -59,7 +59,11 @@ class CollectionsViewModel(val application: Application) : ViewModel() {
     }
 
     fun onBackPressed() {
-        currentPage.value = Page.CollectionList
+        if (currentPage.value != Page.CollectionList) {
+            currentPage.value = Page.CollectionList
+        } else {
+            // TODO: Exit from app
+        }
     }
 
 }

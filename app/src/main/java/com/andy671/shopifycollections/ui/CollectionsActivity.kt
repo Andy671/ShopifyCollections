@@ -47,12 +47,14 @@ class CollectionsActivity : AppCompatActivity() {
                         .hide(collectionDetailsFragment)
                         .commit()
                 text_toolbar_title.visibility = View.VISIBLE
+                card_toolbar.visibility = View.VISIBLE
             } else if (it == CollectionsViewModel.Page.CollectionDetails) {
                 manager.beginTransaction()
                         .show(collectionDetailsFragment)
                         .hide(collectionListFragment)
                         .commit()
                 text_toolbar_title.visibility = View.GONE
+                card_toolbar.visibility = View.GONE
             }
         })
     }
