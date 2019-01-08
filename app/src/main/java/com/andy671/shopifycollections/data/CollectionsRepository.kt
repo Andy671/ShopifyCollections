@@ -45,8 +45,6 @@ class CollectionsRepository(val application: Application) {
         private const val DEFAULT_PAGE = 1
     }
 
-    private var testUrl = "https://cdn.shopify.com/s/files/1/1000/7970/products/Aerodynamic_20Concrete_20Clock.png?v=1443055734"
-
     init {
         collectionListLiveData.value = collectionList
 
@@ -67,7 +65,7 @@ class CollectionsRepository(val application: Application) {
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 val responseBody = response.body() ?: return
-                val list = JSON.nonstrict.parse(JsonCustomCollectionList.serializer(), responseBody.string())
+                val list = JSON.nonstrict.parse(JsonCustomCollections.serializer(), responseBody.string())
                 for (collection in list.custom_collections) {
                     collectionList.add(CustomCollection(collection.id, collection.title, collection.body_html, collection.image.src))
                 }

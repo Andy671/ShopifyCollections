@@ -47,9 +47,9 @@ class CollectionListFragment : Fragment() {
 
     inner class CollectionListViewHolder(private val holderView: View) : RecyclerView.ViewHolder(holderView) {
 
-        fun bind(collection: CustomCollection) {
+        fun bind(collection: CustomCollection, position: Int) {
             holderView.card_collection.setOnClickListener {
-                mViewModel.onClickCollectionCard(collection)
+                mViewModel.onClickCollectionCard(position)
             }
             holderView.text_collection_title.text = collection.title
             // TODO: placeholder drawable
@@ -72,7 +72,7 @@ class CollectionListFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: CollectionListViewHolder, position: Int) {
-            holder.bind(currentList[position])
+            holder.bind(currentList[position], position)
         }
 
         override fun getItemCount(): Int {

@@ -1,7 +1,4 @@
 <resources>
     <string name="app_name">Shopify Collections</string>
-    <string name="test_available_inventory_22">Available Inventory: <b>22</b></string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="total_available_inventory">Available Inventory: &lt;b>%1$d&lt;/b></string>
 </resources>

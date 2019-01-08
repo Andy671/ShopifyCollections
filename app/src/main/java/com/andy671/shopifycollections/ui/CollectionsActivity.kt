@@ -39,11 +39,13 @@ class CollectionsActivity : AppCompatActivity() {
 
             if (it == CollectionsViewModel.Page.CollectionList) {
                 manager.beginTransaction()
+                        .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out)
                         .show(collectionListFragment)
                         .hide(collectionDetailsFragment)
                         .commit()
             } else if (it == CollectionsViewModel.Page.CollectionDetails) {
                 manager.beginTransaction()
+                        .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out)
                         .show(collectionDetailsFragment)
                         .hide(collectionListFragment)
                         .commit()

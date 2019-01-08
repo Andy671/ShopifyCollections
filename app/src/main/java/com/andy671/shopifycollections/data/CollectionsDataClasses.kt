@@ -3,7 +3,7 @@ package com.andy671.shopifycollections.data
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class JsonCustomCollectionList(val custom_collections: List<JsonCustomCollection>)
+data class JsonCustomCollections(val custom_collections: List<JsonCustomCollection>)
 
 @Serializable
 data class JsonCustomCollection(val id: Long,

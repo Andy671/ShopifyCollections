@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="2dp"
                 android:paddingBottom="8dp"
-                android:text="@string/test_available_inventory_22"
+                android:text="@string/total_available_inventory"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:textSize="14sp" />
         </LinearLayout>

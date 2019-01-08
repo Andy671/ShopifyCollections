@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.andy671.shopifycollections.R
+import com.andy671.shopifycollections.data.CustomCollection
 import com.andy671.shopifycollections.data.Product
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -33,14 +35,16 @@ class CollectionDetailsFragment : Fragment() {
 
         mListAdapter = CollectionDetailsAdapter()
 
-        mRecyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_collection_details)
+        mRecyclerView = fragmentView.findViewById(R.id.recycler_collection_details)
         mRecyclerView.adapter = mListAdapter
         mRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         mViewModel.getCurrentCollection().observe(this, Observer {
-            mRecyclerView.scrollToPosition(0)
-            mListAdapter.currentList = it?.products as ArrayList<Product>
-            mListAdapter.notifyDataSetChanged()
+            if (it is CustomCollection) {
+                mRecyclerView.scrollToPosition(0)
+                mListAdapter.currentList = it.products
+                mListAdapter.notifyDataSetChanged()
+            }
         })
 
         return fragmentView
@@ -50,7 +54,10 @@ class CollectionDetailsFragment : Fragment() {
 
         fun bind(product: Product) {
             holderView.text_product_title.text = product.title
-            holderView.text_product_total_inventory.text = product.totalAvailableInventory.toString()
+
+            val html = resources.getString(R.string.total_available_inventory, product.totalAvailableInventory)
+            holderView.text_product_total_inventory.text = Html.fromHtml(html)
+
             // TODO: placeholder drawable
             Glide.with(holderView.context)
                     .load(product.imageUrl)

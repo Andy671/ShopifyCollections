@@ -22,11 +22,21 @@ class CollectionsViewModel(val application: Application) : ViewModel() {
 
     private val collectionsRepository: CollectionsRepository = CollectionsRepository(application)
 
-    private var currentPageLiveData = MutableLiveData<CollectionsViewModel.Page>()
-    private var currentCollectionLiveData = MutableLiveData<CustomCollection>()
+    private var currentPage = MutableLiveData<CollectionsViewModel.Page>()
+    private var currentCollectionIndex = MutableLiveData<Int>()
+
+    private val currentCollection: LiveData<CustomCollection?> = Transformations.switchMap(currentCollectionIndex) { index ->
+        Transformations.map(getCollections()) {
+            if (!it.isEmpty()) {
+                it[index]
+            } else {
+                null
+            }
+        }
+    }
 
     init {
-        currentPageLiveData.value = CollectionsViewModel.Page.CollectionList
+        currentPage.value = CollectionsViewModel.Page.CollectionList
     }
 
     fun getCollections(): LiveData<List<CustomCollection>> {
@@ -34,20 +44,20 @@ class CollectionsViewModel(val application: Application) : ViewModel() {
     }
 
     fun getPage(): LiveData<Page> {
-        return currentPageLiveData
+        return currentPage
     }
 
-    fun getCurrentCollection(): LiveData<CustomCollection> {
-        return currentCollectionLiveData
+    fun getCurrentCollection(): LiveData<CustomCollection?> {
+        return currentCollection
     }
 
-    fun onClickCollectionCard(collection: CustomCollection) {
-        currentCollectionLiveData.value = collection
-        currentPageLiveData.value = Page.CollectionDetails
+    fun onClickCollectionCard(position: Int) {
+        currentCollectionIndex.value = position
+        currentPage.value = Page.CollectionDetails
     }
 
     fun onBackPressed() {
-        currentPageLiveData.value = Page.CollectionList
+        currentPage.value = Page.CollectionList
     }
 
 }
